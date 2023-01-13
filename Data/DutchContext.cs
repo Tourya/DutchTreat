@@ -1,15 +1,10 @@
 ﻿using DutchTreat.Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DutchTreat.Data
 {
-    public class DutchContext : DbContext
+    public class DutchContext : IdentityDbContext<StoreUser>
     {
         private readonly IConfiguration _config;
         public DutchContext(IConfiguration config, DbContextOptions<DutchContext> options) : base(options)

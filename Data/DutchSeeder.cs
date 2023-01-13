@@ -8,17 +8,38 @@ namespace DutchTreat.Data
     {
         private readonly DutchContext _ctx;
         private readonly IWebHostEnvironment _hosting;
+        private readonly UserManager<StoreUser> _userManager;
 
         public DutchSeeder(DutchContext ctx,
-          IWebHostEnvironment hosting)
+          IWebHostEnvironment hosting,
+          UserManager<StoreUser> userManager)
         {
             _ctx = ctx;
             _hosting = hosting;
+            _userManager = userManager;
         }
 
-        public void Seed()
+        public async Task SeedAsync()
         {
             _ctx.Database.EnsureCreated();
+
+            StoreUser user = await _userManager.FindByEmailAsync("tourya@abv.bg");
+            if (user == null)
+            {
+                user = new StoreUser()
+                {
+                    FirstName = "Adelina",
+                    LastName = "Vasileva",
+                    Email = "tourya@abv.bg",
+                    UserName = "tourya@abv.bg"
+                };
+
+                var result = await _userManager.CreateAsync(user, "P@sse0rd!");
+                if (result != IdentityResult.Success)
+                {
+                    throw new InvalidOperationException("Could not create new user in Seeder!");
+                }
+            }
 
             if (!_ctx.Products.Any())
             {
@@ -31,6 +52,7 @@ namespace DutchTreat.Data
                 var order = _ctx.Orders.Where(o => o.Id == 1).FirstOrDefault();
                 if (order != null)
                 {
+                    order.User = user;
                     order.Items = new List<OrderItem>()
           {
             new OrderItem()

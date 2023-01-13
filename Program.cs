@@ -1,6 +1,8 @@
 using AutoMapper;
 using DutchTreat.Data;
+using DutchTreat.Data.Entities;
 using DutchTreat.Services;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using System.Reflection;
 
@@ -12,6 +14,10 @@ builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
                      .AddEnvironmentVariables();
 
 //var connectionString = builder.Configuration.GetConnectionString("DutchContextDb");
+builder.Services.AddIdentity<StoreUser, IdentityRole>(cfg =>
+cfg.User.RequireUniqueEmail = true)
+                .AddEntityFrameworkStores<DutchContext>();
+
 builder.Services.AddDbContext<DutchContext>();
 
 builder.Services.AddTransient<DutchSeeder>();
@@ -30,7 +36,7 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-if(args.Length == 1 && args[0].ToLower() == "/seed")
+if (args.Length == 1 && args[0].ToLower() == "/seed")
 {
     RunSeeding(app);
 }
@@ -42,9 +48,9 @@ void RunSeeding(IHost app)
     using (var scope = scopeFactory!.CreateScope())
     {
         var seeder = scope.ServiceProvider.GetService<DutchSeeder>();
-        seeder!.Seed();
+        seeder!.SeedAsync().Wait();
     }
-    
+
 }
 
 
