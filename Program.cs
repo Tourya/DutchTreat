@@ -3,8 +3,10 @@ using DutchTreat.Data;
 using DutchTreat.Data.Entities;
 using DutchTreat.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +16,22 @@ builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
                      .AddEnvironmentVariables();
 
 //var connectionString = builder.Configuration.GetConnectionString("DutchContextDb");
+
 builder.Services.AddIdentity<StoreUser, IdentityRole>(cfg =>
 cfg.User.RequireUniqueEmail = true)
                 .AddEntityFrameworkStores<DutchContext>();
+
+builder.Services.AddAuthentication()
+                .AddCookie()
+                .AddJwtBearer(cfg =>
+                {
+                    cfg.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = builder.Configuration["Tokens:Issuer"],
+                        ValidAudience = builder.Configuration["Tokens:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Tokens:Key"]))
+                    };
+                });
 
 builder.Services.AddDbContext<DutchContext>();
 
