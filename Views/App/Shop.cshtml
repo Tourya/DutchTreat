@@ -1,14 +1,24 @@
 ﻿@model IEnumerable<Product>
 @section Scripts {
-        <a href="~/ts/shopper.js.map">~/ts/shopper.js.map</a>
-        <script src="~/ts/shopper.js"></script>
-        <a href="~/ts/main.js.map">~/ts/main.js.map</a>
-        <script src="~/ts/main.js"></script>
+    @*<script src="~/client/vendor.36941807857de58b.js"></script>*@
+    @*<script src="~/client/polyfills.be126616119fee81.js"></script>*@
+    @*<script src="~/client/runtime.dc5b7e733f61e8e6.js"></script>*@
+    <script asp-src-include="~/client/vendor.*.js"></script>
+    <script asp-src-include="~/client/polyfills.*.js"></script>
+    <script asp-src-include="~/client/runtime.*.js"></script>
+    <script asp-src-include="~/client/main.*.js" asp-append-version="true"></script>
+
+    @* regex to match the hashes /(main|styles|scripts|vendor|inline).*.bundle.(map|js|css)/g*@
+}
+@section head {
+    <link href="~/client/styles.ef46db3751d8e999.css" rel="stylesheet" />
 }
 
-    <h1>Shop</h1>
-    <p>Count: @Model.Count()</p>
- <div class="row">
+<the-shop></the-shop>
+
+@*<h1>Shop</h1>
+<p>Count: @Model.Count()</p>
+<div class="row">
    @foreach (var p in Model)
    {
      <div class="col-md-3">
@@ -25,4 +35,4 @@
        </div>
      </div>
    }
-</div>
+</div>*@
