@@ -23,7 +23,7 @@ export class Store {
     addToOrder(product: Product) {
 
         let item: OrderItem | undefined;
-        item = this.order.items.find(o => o.productArtId === product.artId)
+        item = this.order.items.find(o => o.productId === product.id)
 
         if (item) {
             item.quantity++;
