@@ -1,4 +1,4 @@
-﻿import { HttpClient } from "@angular/common/http";
+﻿import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { map, Observable } from "rxjs";
 import { LoginRequest, LoginResults } from "../shared/LoginResults";
@@ -36,7 +36,12 @@ export class Store {
     }
 
     checkout() {
-        return this.http.post("/api/orders", this.order)
+        const headers = new HttpHeaders().set("Authorization", `Bearer ${this.token}`);
+        return this.http.post("/api/orders", this.order, {
+            headers: headers })
+            .pipe(map(() => {
+                this.order = new Order();
+            }));
     }
 
     addToOrder(product: Product) {
