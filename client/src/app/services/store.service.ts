@@ -1,6 +1,7 @@
 ﻿import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { map, Observable } from "rxjs";
+import { LoginRequest, LoginResults } from "../shared/LoginResults";
 import { Order, OrderItem } from "../shared/Order";
 import { Product } from "../shared/Product";
 
@@ -12,12 +13,30 @@ export class Store {
 
     public products: Product[] = [];
     public order: Order = new Order();
+    public token = "";
+    public expiration = new Date();
 
     loadProducts(): Observable<void> {
         return this.http.get<[]>("/api/products").pipe(map(data => {
             this.products = data;
             return;
         }));
+    }
+
+    get loginRequired(): boolean {
+        return this.token.length == 0 || this.expiration > new Date();
+    }
+
+    login(creds: LoginRequest) {
+        return this.http.post<LoginResults>("/account/createtoken", creds)
+            .pipe(map(data => {
+                this.token = data.token;
+                this.expiration = data.expiration;
+            }));
+    }
+
+    checkout() {
+        return this.http.post("/api/orders", this.order)
     }
 
     addToOrder(product: Product) {
